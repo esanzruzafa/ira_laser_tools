@@ -6,7 +6,8 @@ project(ira_laser_tools)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS laser_geometry roscpp sensor_msgs std_msgs tf dynamic_reconfigure pcl_ros)
 
-find_package(Eigen3 REQUIRED)
+##find_package(Eigen3 REQUIRED)
+SET( EIGEN3_INCLUDE_DIR "$ENV{EIGEN3_INCLUDE_DIR}" )
 
 find_package(PCL REQUIRED)
 
