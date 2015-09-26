@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+    <arg name="robot" />
+
+    <!-- SICK -->
+    <include file="$(find maggie_navigation_config)/launch/laser/sick.launch">
+        <arg name="robot" value="$(arg robot)" />
+    </include>
+
+    <!-- HOKUYO -->
+    <include file="$(find maggie_navigation_config)/launch/laser/hokuyo.launch">
+        <arg name="robot" value="$(arg robot)" />
+    </include>
+
+    <!-- KINECT (OPENNI) -->
+    <include file="$(find openni_launch)/launch/openni.launch">
+		<arg name="camera" value="$(arg robot)_camera" />
+	</include>
+	
+	<!-- Manager to pcl tf -->
+	<node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+		
+	<!-- Run the PCL to Laserscan nodelet -->
+	<node pkg="nodelet" type="nodelet" name="pcl_to_laserscan"
+		  args="load pointcloud_to_laserscan/pointcloud_to_laserscan_nodelet pcl_manager"
+		  output="screen">
+		<remap from="cloud_in" to="$(arg robot)_camera/depth/points"/>
+		<remap from="scan" to="$(arg robot)/scan_kinect"/>
+		<param name="target_frame" value="base_link"/>
+		<param name="use_inf" value="false"/>
+		<param name="use_concurrency" value="true"/>
+		<param name="concurrency_level" value="0"/>
+		<param name="min_height" value="0.015"/>
+		<param name="max_height" value="1.40"/>
+		<param name="range_min" value="0"/>
+		<param name="range_max" value="10"/>
+	</node>
+	
+	<!-- Merge laser tool by IRALAB -->
+    <include file="$(find ira_laser_tools)/launch/laserscan_multi_merger.launch">
+	</include>
+
+</launch>
